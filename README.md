@@ -1,12 +1,33 @@
-# React + Vite
+# Coffee Admin Portal
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A simple React + Vite project with an admin portal to manage coffee products.
 
-Currently, two official plugins are available:
+## Features
+- **Home page** — welcome screen  
+- **Shop page** — list of coffees with search and delete options  
+- **Product page** — view and edit price for a single coffee  
+- **Admin page** — add new products  
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## Screenshots
 
-## Expanding the ESLint configuration
+### Home
+![Home](./screenshots/home.png)
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+### Shop
+![Shop](./screenshots/shop.png)
+
+### Product
+![Product](./screenshots/product.png)
+
+### Admin
+![Admin](./screenshots/admin.png)
+
+### Tests
+![Tests](./screenshots/tests.png)
+
+## Setup
+
+```bash
+npm install       # install dependencies
+npm run dev       # start development server
+npm test          # run tests

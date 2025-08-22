@@ -1,15 +1,17 @@
-import React from "react";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import ProductCard from "../components/ProductCard.jsx";
 
 const API = "http://localhost:3001";
 
+/**
+ * Shop page: fetch list, search, delete (optimistic).
+ */
 export default function Shop() {
   // Local UI state
-  const [products, setProducts] = useState([]);   // all products from server
-  const [query, setQuery] = useState("");         // search text
-  const [loading, setLoading] = useState(true);   // loading flag
-  const [error, setError] = useState(null);       // error message
+  const [products, setProducts] = useState([]); // all products from server
+  const [query, setQuery] = useState(""); // search text
+  const [loading, setLoading] = useState(true); // loading flag
+  const [error, setError] = useState(null); // error message
 
   // Load data on mount
   useEffect(() => {
@@ -34,17 +36,15 @@ export default function Shop() {
     const ok = window.confirm("Delete this product?");
     if (!ok) return;
 
-    // 1) Optimistic UI: remove from state immediately
+    // Optimistic update
     setProducts((prev) => prev.filter((p) => p.id !== id));
 
     try {
-      // 2) Tell the server to delete
       await fetch(`${API}/coffee/${id}`, { method: "DELETE" });
-      // json-server returns {}; nothing else to do.
     } catch (err) {
       console.error("Failed to delete:", err);
       alert("Could not delete. Restoring list…");
-      // Fallback: re-fetch to restore if deletion failed
+      // Fallback: restore by re-fetching
       fetch(`${API}/coffee`).then((r) => r.json()).then(setProducts);
     }
   }
@@ -56,7 +56,7 @@ export default function Shop() {
   });
 
   if (loading) return <p style={{ padding: 16 }}>Loading products...</p>;
-  if (error)   return <p style={{ padding: 16, color: "crimson" }}>{error}</p>;
+  if (error) return <p style={{ padding: 16, color: "crimson" }}>{error}</p>;
 
   return (
     <main style={{ padding: 16 }}>
@@ -88,18 +88,12 @@ export default function Shop() {
         }}
       >
         {visible.map((item) => (
-          <ProductCard
-            key={item.id}
-            item={item}
-            onDelete={handleDelete}  // pass delete handler to the card
-          />
+          <ProductCard key={item.id} item={item} onDelete={handleDelete} />
         ))}
       </div>
 
       {/* Empty state */}
-      {visible.length === 0 && (
-        <p style={{ marginTop: 16 }}>No products found.</p>
-      )}
+      {visible.length === 0 && <p style={{ marginTop: 16 }}>No products found.</p>}
     </main>
   );
 }
