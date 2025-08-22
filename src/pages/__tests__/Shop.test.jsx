@@ -6,25 +6,28 @@ import { MemoryRouter } from "react-router-dom";
 
 import Shop from "../Shop.jsx";
 
-// ---- Test data ----
+// ----- Fake test data for mocking the server -----
 const products = [
   { id: "1", name: "Vanilla Bean", description: "Medium Roast", origin: "Colombia", price: 10 },
   { id: "2", name: "House Blend", description: "Dark Roast", origin: "Vietnam", price: 12 },
   { id: "3", name: "Ethiopian Sunrise", description: "Light Roast", origin: "Ethiopia", price: 14 },
 ];
 
-// Use a single global fetch mock for all tests
+// Replace the global fetch function with a mock
 vi.stubGlobal("fetch", vi.fn());
 
 beforeEach(() => {
-  // Reset mock calls and provide default implementation:
-  // - GET /coffee  -> returns the list
-  // - DELETE /coffee/:id -> ok:true
+  // Mock window.confirm so it always returns true (user confirmed deletion)
+  vi.spyOn(window, "confirm").mockReturnValue(true);
+
+  // Reset fetch before each test and define default behavior
   fetch.mockReset();
-  fetch.mockImplementation(async (url, options) => {
-    if (!options || !options.method || options.method === "GET") {
+  fetch.mockImplementation(async (url, options = {}) => {
+    // GET request returns our fake products
+    if (!options.method || options.method === "GET") {
       return { ok: true, json: async () => products };
     }
+    // DELETE request always succeeds
     if (options.method === "DELETE") {
       return { ok: true, json: async () => ({}) };
     }
@@ -34,22 +37,21 @@ beforeEach(() => {
 
 describe("Shop page", () => {
   it("filters products by search query", async () => {
-    // Render Shop inside a MemoryRouter (ProductCard uses <Link>)
     render(
       <MemoryRouter>
         <Shop />
       </MemoryRouter>
     );
 
-    // Wait for first item to appear
+    // Wait for the first product to appear
     expect(await screen.findByText(/Vanilla Bean/i)).toBeInTheDocument();
 
-    // Type into the search field
+    // Type "house" into the search input
     const input = screen.getByPlaceholderText(/search coffee/i);
     await userEvent.clear(input);
     await userEvent.type(input, "house");
 
-    // Should hide "Vanilla Bean" and show "House Blend"
+    // Vanilla Bean should disappear, House Blend should be visible
     await waitFor(() => {
       expect(screen.queryByText(/Vanilla Bean/i)).not.toBeInTheDocument();
       expect(screen.getByText(/House Blend/i)).toBeInTheDocument();
@@ -63,19 +65,19 @@ describe("Shop page", () => {
       </MemoryRouter>
     );
 
-    // Wait until list is loaded
+    // Wait for products to load
     expect(await screen.findByText(/Vanilla Bean/i)).toBeInTheDocument();
 
-    // Click the first "Delete" button (for Vanilla Bean)
+    // Click the Delete button on the first product
     const deleteButtons = screen.getAllByRole("button", { name: /delete/i });
     await userEvent.click(deleteButtons[0]);
 
-    // Optimistic UI: "Vanilla Bean" should disappear
+    // Optimistic UI: Vanilla Bean should disappear from the screen
     await waitFor(() => {
       expect(screen.queryByText(/Vanilla Bean/i)).not.toBeInTheDocument();
     });
 
-    // And DELETE should be called with the proper endpoint
+    // Ensure DELETE was called with correct URL
     expect(fetch).toHaveBeenCalledWith(
       expect.stringMatching(/\/coffee\/1$/),
       expect.objectContaining({ method: "DELETE" })

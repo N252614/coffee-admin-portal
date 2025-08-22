@@ -1,19 +1,10 @@
-// Landing page
+import React from "react";
 
 export default function Home() {
-    return (
-      <section style={{
-        minHeight: "60vh",
-        display: "grid",
-        placeItems: "center",
-        background: "#8b5a3c",
-        color: "white",
-        textAlign: "center"
-      }}>
-        <div>
-          <h1 style={{ fontSize: 40 }}>Coffee R Us</h1>
-          <p>The go to store for your coffee needs</p>
-        </div>
-      </section>
-    );
-  }
+  return (
+    <main style={{ padding: 16 }}>
+      <h2>Welcome to Coffee Admin Portal</h2>
+      <p>Manage coffee products: view, edit, delete or add new coffees using the navigation above.</p>
+    </main>
+  );
+}

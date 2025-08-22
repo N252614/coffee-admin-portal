@@ -1,6 +1,12 @@
+import React from "react";
 import { Link } from "react-router-dom";
 
-// ProductCard component shows product info, link to details, and delete button
+/**
+ * Small presentational card for a coffee product.
+ * Props:
+ *  - item: { id, name, description, origin, price }
+ *  - onDelete: (id) => void
+ */
 export default function ProductCard({ item, onDelete }) {
   return (
     <div
@@ -21,10 +27,9 @@ export default function ProductCard({ item, onDelete }) {
         <b>Price:</b> ${item.price}
       </p>
 
-      {/* Buttons container */}
       <div style={{ display: "flex", gap: 8, marginTop: 8 }}>
-        {/* Link to product details */}
         <Link
+          data-discover
           to={`/product/${item.id}`}
           style={{
             padding: "6px 10px",
@@ -38,15 +43,14 @@ export default function ProductCard({ item, onDelete }) {
           View
         </Link>
 
-        {/* Delete button */}
         <button
-          onClick={() => onDelete(item.id)}
+          onClick={() => onDelete?.(item.id)}
           style={{
             padding: "6px 10px",
             borderRadius: 6,
             border: "1px solid #b3261e",
             background: "#b3261e",
-            color: "white",
+            color: "#fff",
             fontWeight: 600,
             cursor: "pointer",
           }}
